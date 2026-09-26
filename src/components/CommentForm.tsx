@@ -12,16 +12,21 @@ function CommentForm({ onAddComment }: CommentFormProps) {
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    // Validation
-    if (name.trim() === "" || text.trim() === "") {
-      setError("Please enter your name and comment.");
-      return;
-    }
+// Validation
+if (name.trim() === "" || text.trim() === "") {
+  setError("Please enter your name and comment.");
+  return;
+}
 
-    if (text.trim().length < 5) {
-      setError("Comment must be at least 5 characters.");
-      return;
-    }
+if (name.trim().length < 2) {
+  setError("Name must be at least 2 characters.");
+  return;
+}
+
+if (text.trim().length < 10) {
+  setError("Comment must be at least 10 characters.");
+  return;
+}
 
     // Send comment to parent component
     onAddComment(name.trim(), text.trim());
