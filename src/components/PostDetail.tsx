@@ -6,16 +6,20 @@ type PostDetailProps = {
 
 function PostDetail({ post }: PostDetailProps) {
   return (
-    <article>
-      <img src={post.imageUrl} alt={post.title} />
+    <article className="post-detail">
+      <img
+        className="post-detail-image"
+        src={post.imageUrl}
+        alt={post.title}
+      />
 
-      <p>{post.category}</p>
+      <p className="post-category">{post.category}</p>
 
       <h2>{post.title}</h2>
 
-      <p>{post.date}</p>
+      <p className="post-date">{post.date}</p>
 
-      <p>{post.content}</p>
+      <p className="post-content">{post.content}</p>
     </article>
   );
 }

@@ -7,14 +7,21 @@ type PostCardProps = {
 
 function PostCard({ post, onSelectPost }: PostCardProps) {
   return (
-    <article onClick={() => onSelectPost(post)}>
-      <img src={post.imageUrl} alt={post.title} />
+    <article
+      className="post-card"
+      onClick={() => onSelectPost(post)}
+    >
+      <img
+        className="post-card-image"
+        src={post.imageUrl}
+        alt={post.title}
+      />
 
-      <div>
-        <p>{post.category}</p>
+      <div className="post-card-content">
+        <p className="post-category">{post.category}</p>
         <h3>{post.title}</h3>
-        <p>{post.date}</p>
-        <p>{post.excerpt}</p>
+        <p className="post-date">{post.date}</p>
+        <p className="post-excerpt">{post.excerpt}</p>
       </div>
     </article>
   );

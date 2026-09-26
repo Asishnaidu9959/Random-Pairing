@@ -8,10 +8,10 @@ type PostListProps = {
 
 function PostList({ posts, onSelectPost }: PostListProps) {
   return (
-    <section>
+    <section className="post-list" id="posts">
       <h2>Recent Posts</h2>
 
-      <div>
+      <div className="post-list-items">
         {posts.map((post) => (
           <PostCard
             key={post.id}

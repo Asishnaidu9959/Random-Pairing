@@ -1,6 +1,6 @@
 function Hero() {
   return (
-    <section>
+    <section className="hero" id="home">
       <h2>Welcome to Our Blog</h2>
       <p>
         Discover stories, ideas, and tips about React, TypeScript, and web
