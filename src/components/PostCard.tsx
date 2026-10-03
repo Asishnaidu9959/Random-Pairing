@@ -1,4 +1,4 @@
-import type { Post } from "../data/posts";
+import type { Post } from "../types";
 
 type PostCardProps = {
   post: Post;
@@ -11,17 +11,20 @@ function PostCard({ post, onSelectPost }: PostCardProps) {
       className="post-card"
       onClick={() => onSelectPost(post)}
     >
-      <img
-        className="post-card-image"
-        src={post.imageUrl}
-        alt={post.title}
-      />
-
       <div className="post-card-content">
-        <p className="post-category">{post.category}</p>
+        <p className="post-category">{post.tags.join(" • ")}</p>
+
         <h3>{post.title}</h3>
-        <p className="post-date">{post.date}</p>
-        <p className="post-excerpt">{post.excerpt}</p>
+
+        <p className="post-excerpt">
+          {post.body.length > 100
+            ? `${post.body.slice(0, 100)}...`
+            : post.body}
+        </p>
+
+        <p className="post-date">
+          👁 {post.views} views
+        </p>
       </div>
     </article>
   );

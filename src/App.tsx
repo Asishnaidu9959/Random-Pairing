@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import PostList from "./components/PostList";
@@ -6,40 +6,103 @@ import PostDetail from "./components/PostDetail";
 import CommentList from "./components/CommentList";
 import CommentForm from "./components/CommentForm";
 import CategoryList from "./components/CategoryList";
-import { posts } from "./data/posts";
+import type { Post, Comment } from "./types";
 import "./App.css";
 
-type Comment = {
-  id: number;
-  name: string;
-  text: string;
-};
 
 type CommentsByPost = {
   [postId: number]: Comment[];
 };
 
 function App() {
-  const [selectedPost, setSelectedPost] = useState(posts[0]);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const [comments, setComments] = useState<CommentsByPost>({});
-
   const [lastCommenter, setLastCommenter] = useState("");
-
   const [selectedCategory, setSelectedCategory] = useState("All");
 
+  useEffect(() => {
+  fetch("https://dummyjson.com/posts")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Failed to fetch posts");
+      }
+
+      return response.json();
+    })
+    .then((data) => {
+      setPosts(data.posts);
+
+      if (data.posts.length > 0) {
+        setSelectedPost(data.posts[0]);
+      }
+
+      setLoading(false);
+    })
+    .catch(() => {
+      setError("Unable to load blog posts. Please try again later.");
+      setLoading(false);
+    });
+}, []);
+
+  useEffect(() => {
+  if (!selectedPost) return;
+
+  if (comments[selectedPost.id]) return;
+
+  fetch(`https://dummyjson.com/posts/${selectedPost.id}/comments`)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Failed to fetch comments");
+      }
+
+      return response.json();
+    })
+    .then((data) => {
+      const apiComments: Comment[] = data.comments.map(
+        (comment: {
+          id: number;
+          body: string;
+          user: {
+            fullName: string;
+          };
+        }) => ({
+          id: comment.id,
+          name: comment.user.fullName,
+          text: comment.body,
+        })
+      );
+
+      setComments((prevComments) => ({
+        ...prevComments,
+        [selectedPost.id]: apiComments,
+      }));
+    })
+    .catch((error) => {
+      console.error("Unable to load comments:", error);
+    });
+}, [selectedPost]);
+
+
   const categories = Array.from(
-    new Set(posts.map((post) => post.category))
-  );
+  new Set(posts.flatMap((post) => post.tags))
+);
 
   const filteredPosts =
-    selectedCategory === "All"
-      ? posts
-      : posts.filter((post) => post.category === selectedCategory);
+  selectedCategory === "All"
+    ? posts
+    : posts.filter((post) => post.tags.includes(selectedCategory));
 
-  const currentComments = comments[selectedPost.id] || [];
+  const currentComments = selectedPost
+    ? comments[selectedPost.id] || []
+    : [];
 
   function handleAddComment(name: string, text: string) {
+    if (!selectedPost) return;
+
     const newComment: Comment = {
       id: Date.now(),
       name,
@@ -63,12 +126,36 @@ function App() {
     const categoryPosts =
       category === "All"
         ? posts
-        : posts.filter((post) => post.category === category);
+        : posts.filter((post) => post.tags.includes(category));
 
     if (categoryPosts.length > 0) {
       setSelectedPost(categoryPosts[0]);
     }
   }
+
+  if (loading) {
+  return (
+    <>
+      <Navbar />
+      <Hero />
+      <main className="status-message">
+        <p>Loading posts...</p>
+      </main>
+    </>
+  );
+}
+
+if (error) {
+  return (
+    <>
+      <Navbar />
+      <Hero />
+      <main className="status-message">
+        <p>{error}</p>
+      </main>
+    </>
+  );
+}
 
   return (
     <>
@@ -90,7 +177,7 @@ function App() {
         </div>
 
         <div className="detail-column">
-          <PostDetail post={selectedPost} />
+          {selectedPost && <PostDetail post={selectedPost} />}
 
           <CommentList comments={currentComments} />
 

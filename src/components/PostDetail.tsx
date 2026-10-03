@@ -1,4 +1,4 @@
-import type { Post } from "../data/posts";
+import type { Post } from "../types";
 
 type PostDetailProps = {
   post: Post;
@@ -7,19 +7,23 @@ type PostDetailProps = {
 function PostDetail({ post }: PostDetailProps) {
   return (
     <article className="post-detail">
-      <img
-        className="post-detail-image"
-        src={post.imageUrl}
-        alt={post.title}
-      />
-
-      <p className="post-category">{post.category}</p>
+      <p className="post-category">
+        {post.tags.join(" • ")}
+      </p>
 
       <h2>{post.title}</h2>
 
-      <p className="post-date">{post.date}</p>
+      <p className="post-content">
+        {post.body}
+      </p>
 
-      <p className="post-content">{post.content}</p>
+      <p className="post-date">
+        👁 {post.views} views
+        {" • "}
+        👍 {post.reactions.likes} likes
+        {" • "}
+        👎 {post.reactions.dislikes} dislikes
+      </p>
     </article>
   );
 }

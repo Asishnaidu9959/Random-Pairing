@@ -1,10 +1,6 @@
 import CommentItem from "./CommentItem";
+import type { Comment } from "../types";
 
-type Comment = {
-  id: number;
-  name: string;
-  text: string;
-};
 
 type CommentListProps = {
   comments: Comment[];
